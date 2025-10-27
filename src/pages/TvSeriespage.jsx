@@ -12,8 +12,6 @@ export default function TvSeriesPage() {
 
   if (isPending) return <Spinner />;
 
-  console.log('dd:', series);
-
   return (
     <div className="p-2 text-yellow-100 mb-8">
       <h1 className="font-bold text-lg mb-2">series</h1>
