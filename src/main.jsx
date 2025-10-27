@@ -14,7 +14,13 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import DetailsPage from './pages/DetailsPage.jsx';
 import Searchpage from './pages/Searchpage.jsx';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: Infinity,
+    },
+  },
+});
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

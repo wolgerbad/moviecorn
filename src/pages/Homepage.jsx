@@ -1,21 +1,20 @@
 import { useQuery } from '@tanstack/react-query';
 import { getMovies, getTvSeries } from '../lib/helpers';
 import Carousel from '../components/Carousel';
+import Spinner from '../components/Spinner';
 
 export default function Homepage() {
   const { isPending, data: movies } = useQuery({
     queryKey: ['movies'],
     queryFn: getMovies,
-    staleTime: Infinity,
   });
 
   const { isPending: seriesPending, data: series } = useQuery({
     queryKey: ['series'],
     queryFn: getTvSeries,
-    staleTime: Infinity,
   });
 
-  if (isPending || seriesPending) return <p>Loading...</p>;
+  if (isPending || seriesPending) return <Spinner />;
 
   const actionMovies = movies.filter((movie) => movie.genre_ids.includes(28));
   const comedyMovies = movies?.filter((movie) => movie.genre_ids.includes(35));

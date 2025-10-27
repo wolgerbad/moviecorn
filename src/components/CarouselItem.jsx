@@ -12,7 +12,7 @@ export default function CarouselItem({ item }) {
           alt={item.title}
           className="rounded-lg w-full h-60 object-cover border-2 border-transparent hover:brightness-75 hover:border-amber-500 cursor-pointer"
         />
-        <p className="mt-1 text-sm text-center">{item.title || item.name}</p>
+        <h1 className="mt-1 text-sm text-center">{item.title || item.name}</h1>
       </Link>
     </div>
   );

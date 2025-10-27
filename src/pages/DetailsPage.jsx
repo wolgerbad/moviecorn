@@ -18,6 +18,8 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { add, remove } from '../store/favoritesSlice';
 import { useEffect } from 'react';
+import { Bounce, toast, ToastContainer } from 'react-toastify';
+import Spinner from '../components/Spinner';
 
 export default function DetailsPage({ type }) {
   const isMovie = type === 'movie';
@@ -28,19 +30,24 @@ export default function DetailsPage({ type }) {
 
   const favorites = useSelector((state) => state.favorites);
 
-  const { isPending: isDetailsLoading, data } = useQuery({
+  const {
+    isPending: isDetailsLoading,
+    data,
+    isRefetching,
+  } = useQuery({
     queryKey: [`${isMovie ? 'movieDetails' : 'showDetails'}`],
     queryFn: async () =>
       isMovie ? await getMovieDetailsById(+id) : getShowDetailsById(+id),
   });
 
-  const { isPending: isRecommendationsLoading, data: recommendations } =
-    useQuery({
-      queryKey: ['recommendations'],
-      queryFn: async () =>
-        getRecommendationsById(+id, isMovie ? 'movie' : 'tv'),
-      staleTime: Infinity,
-    });
+  const {
+    isPending: isRecommendationsLoading,
+    isRefetching: isRecommendationsRefetching,
+    data: recommendations,
+  } = useQuery({
+    queryKey: ['recommendations'],
+    queryFn: async () => getRecommendationsById(+id, isMovie ? 'movie' : 'tv'),
+  });
 
   useEffect(
     function () {
@@ -51,7 +58,13 @@ export default function DetailsPage({ type }) {
     [isMovie, id, queryClient]
   );
 
-  if (isDetailsLoading || isRecommendationsLoading) return <p>loading...</p>;
+  if (
+    isDetailsLoading ||
+    isRecommendationsLoading ||
+    isRefetching ||
+    isRecommendationsRefetching
+  )
+    return <Spinner />;
 
   const {
     poster_path,
@@ -74,6 +87,12 @@ export default function DetailsPage({ type }) {
   console.log('favorites:', favorites);
   console.log('isFavorite:', isFavorite);
 
+  const notify = () => {
+    isFavorite
+      ? toast('Removed from favorites!')
+      : toast('Added to favorites successfully');
+  };
+
   const formattedReleaseDate = format(
     releaseDate || firstAirDate,
     'MM / yyyy '
@@ -86,26 +105,15 @@ export default function DetailsPage({ type }) {
   }
 
   return (
-    <div className="px-8 py-4">
+    <div className="px-8 py-4 pb-64">
       <div className="grid grid-cols-8 gap-8 relative">
-        <button
-          onClick={handleFavorite}
-          className="absolute top-0 right-0 cursor-pointer text-amber bg-yellow-700 hover:brightness-125 text-white overflow-hidden z-50 border-red-500 py-2 px-1 rounded-md"
-        >
-          {isFavorite ? (
-            <MdOutlineFavorite className="text-4xl" />
-          ) : (
-            <MdFavoriteBorder className="text-4xl" />
-          )}
-        </button>
-
-        <div className="col-start-1 col-span-2">
+        <div className="col-start-1 col-span-full md:col-start-1 md:col-span-2">
           <img
             src={`${baseImageUrl}/w500/${poster_path}`}
-            className="h-96 w-full"
+            className="max-h-96 w-full object-cover"
           />
         </div>
-        <div className="col-start-3 col-span-5 flex flex-col gap-8 items-start">
+        <div className="col-start-1 col-span-full md:col-start-3 md:col-span-4 flex flex-col gap-8 max-h-96 items-start">
           <div>
             <h1 className="text-xl font-bold mb-4">{title || name}</h1>
             <div className="flex gap-8 font-semibold tracking-wide">
@@ -141,16 +149,29 @@ export default function DetailsPage({ type }) {
           </a>
           <p className="">{overview}</p>
           <div className="flex gap-4 items-center">
-            <span className="font-semibold">Genres:</span>
+            <span className="font-semibold">Genre:</span>
             {genres.map((genre) => (
-              <span className="border-2 border-yellow-50 px-2 py-1 rounded-full cursor-pointer hover:border-yellow-200">
+              <span className="border-2 border-yellow-50 px-2 py-1 rounded-full cursor-context-menu hover:border-yellow-200">
                 {genre.name}
               </span>
             ))}
           </div>
         </div>
+        <button
+          onClick={() => {
+            handleFavorite();
+            notify();
+          }}
+          className="absolute top-0 right-0 cursor-pointer text-amber bg-yellow-700 hover:brightness-125 text-white overflow-hidden z-50 border-red-500 py-2 px-1 rounded-md"
+        >
+          {isFavorite ? (
+            <MdOutlineFavorite className="text-4xl" />
+          ) : (
+            <MdFavoriteBorder className="text-4xl" />
+          )}
+        </button>
       </div>
-      <div className="mt-8">
+      <div className="mt-16">
         {!recommendations ? (
           <p>No recommendations found.</p>
         ) : (
@@ -162,6 +183,19 @@ export default function DetailsPage({ type }) {
           </>
         )}
       </div>
+      <ToastContainer
+        position="top-center"
+        autoClose={1500}
+        hideProgressBar={false}
+        newestOnTop={true}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+        transition={Bounce}
+      />
     </div>
   );
 }

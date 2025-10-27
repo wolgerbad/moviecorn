@@ -32,7 +32,7 @@ export default function Carousel({ items }) {
       </button>
       <div className="embla overflow-hidden" ref={emblaRef}>
         <div className="embla__container flex">
-          {items.map((item, idx) => (
+          {items?.map((item, idx) => (
             <CarouselItem key={idx} item={item} />
           ))}
         </div>
