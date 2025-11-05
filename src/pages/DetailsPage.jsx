@@ -109,8 +109,10 @@ export default function DetailsPage({ type }) {
       <div className="grid grid-cols-8 gap-8 relative">
         <div className="col-start-1 col-span-full md:col-start-1 md:col-span-2">
           <img
+            loading="lazy"
             src={`${baseImageUrl}/w500/${poster_path}`}
-            className="max-h-96 w-full object-cover"
+            onLoad={(e) => e.currentTarget.classList.add('opacity-100')}
+            className="max-h-96 w-full object-cover transition-opacity duration-500 opacity-0"
           />
         </div>
         <div className="col-start-1 col-span-full md:col-start-3 md:col-span-4 flex flex-col gap-8 max-h-96 items-start">

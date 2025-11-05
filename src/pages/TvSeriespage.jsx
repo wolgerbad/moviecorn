@@ -19,8 +19,10 @@ export default function TvSeriesPage() {
         {series.map((show) => (
           <Link to={`/series/${show.id}`}>
             <img
+              loading="lazy"
+              onLoad={(e) => e.currentTarget.classList.add('opacity-100')}
               src={`${baseImageUrl}/w500/${show.poster_path}`}
-              className="w-full border-2 border-transparent hover:border-amber-500 hover:brightness-75 rounded-lg"
+              className="w-full border-2 border-transparent hover:border-amber-500 hover:brightness-75 rounded-lg transition-opacity duration-500 opacity-0"
             />
             <h1 className="mt-1 text-sm text-center">{show.name}</h1>
           </Link>

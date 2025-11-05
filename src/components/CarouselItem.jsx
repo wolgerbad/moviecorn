@@ -10,7 +10,9 @@ export default function CarouselItem({ item }) {
         <img
           src={`${baseImageUrl}/w500${item.poster_path}`}
           alt={item.title}
-          className="rounded-lg w-full h-60 object-cover border-2 border-transparent hover:brightness-75 hover:border-amber-500 cursor-pointer"
+          loading="lazy"
+          onLoad={(e) => e.currentTarget.classList.add('opacity-100')}
+          className="rounded-lg w-full h-60 object-cover border-2 border-transparent hover:brightness-75 hover:border-amber-500 cursor-pointer transition-opacity duration-500 opacity-0"
         />
         <h1 className="mt-1 text-sm text-center">{item.title || item.name}</h1>
       </Link>

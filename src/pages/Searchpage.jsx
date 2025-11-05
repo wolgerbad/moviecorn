@@ -42,8 +42,10 @@ export default function Searchpage() {
         {data.map((val) => (
           <Link to={`/${val.first_air_date ? 'series' : 'movies'}/${val.id}`}>
             <img
+              loading="lazy"
+              onLoad={(e) => e.currentTarget.classList.add('opacity-100')}
               src={`${baseImageUrl}/w500/${val.poster_path}`}
-              className="rounded-lg border-2 border-transparent hover:brightness-75 hover:border-amber-500 "
+              className="rounded-lg border-2 border-transparent hover:brightness-75 hover:border-amber-500 transition-opacity duration-500 opacity-0 "
             />
             <h1 className="mt-1 text-sm text-center">
               {val.title || val.name}

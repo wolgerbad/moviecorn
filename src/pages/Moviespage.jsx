@@ -28,7 +28,9 @@ export default function Moviespage() {
           return (
             <Link to={`/movies/${movie.id}`} key={movie.id}>
               <img
-                className="w-full rounded-lg border-2 border-transparent hover:border-2 hover:brightness-75 hover:border-amber-500 cursor-pointer"
+                loading="lazy"
+                onLoad={(e) => e.currentTarget.classList.add('opacity-100')}
+                className="w-full rounded-lg border-2 border-transparent hover:border-2 hover:brightness-75 hover:border-amber-500 cursor-pointer transition-opacity duration-500 opacity-0"
                 src={`${baseImageUrl}/w500/${movie.poster_path}`}
               />
               <h1 className="mt-1 text-sm text-center">{movie.title}</h1>
