@@ -5,14 +5,14 @@ export default function CarouselItem({ item }) {
   const movieOrSeries = item.first_air_date ? 'series' : 'movies';
 
   return (
-    <div className="embla__slide flex-[0_0_auto] w-40 mr-3 shrink-0 select-none relative">
+    <div className="embla__slide flex-[0_0_auto] w-24 h-42 sm:w-32 sm:h-50 md:w-40 md:h-60 mr-3 shrink-0 select-none relative">
       <Link to={`/${movieOrSeries}/${item.id}`}>
         <img
           src={`${baseImageUrl}/w500${item.poster_path}`}
           alt={item.title}
           loading="lazy"
           onLoad={(e) => e.currentTarget.classList.add('opacity-100')}
-          className="rounded-lg w-full h-60 object-cover border-2 border-transparent hover:brightness-75 hover:border-amber-500 cursor-pointer transition-opacity duration-500 opacity-0"
+          className="rounded-lg w-full h-full object-cover border-2 border-transparent hover:brightness-75 hover:border-amber-500 cursor-pointer transition-opacity duration-500 opacity-0"
         />
         <h1 className="mt-1 text-sm text-center">{item.title || item.name}</h1>
       </Link>

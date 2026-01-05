@@ -7,10 +7,10 @@ export default function Navbar({ setIsMenuOpen }) {
     setIsMenuOpen((menu) => !menu);
   }
   return (
-    <nav className="flex justify-between items-center text-xl tracking-wide font-bold bg-black/60 text-yellow-100 px-8 py-4">
+    <nav className="flex justify-between items-center text-xl tracking-wide font-bold bg-black/60 text-yellow-100 px-4 lg:px-8 py-4">
       <div className="flex gap-2 items-center">
         <GiHamburgerMenu
-          className="h-10 lg:hidden cursor-pointer"
+          className="h-10 lg:hidden cursor-pointer menu-toggle"
           onClick={handleMenu}
         />
 

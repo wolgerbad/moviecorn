@@ -8,7 +8,9 @@ export default function Sidebar() {
   return (
     <nav className="h-[calc(100vh-80px)] text-yellow-100 bg-black/90 py-4">
       <ul className="flex flex-col gap-8 text-lg font-semibold py-2">
-        <SearchInput type="side" />
+        <div className="px-2 lg:hidden ">
+          <SearchInput type="side" />
+        </div>
         <NavLink
           to="/"
           className="flex items-center gap-2 px-4 py-2 border-l-4 border-transparent"

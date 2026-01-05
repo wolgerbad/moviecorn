@@ -15,6 +15,8 @@ import {
   MdStar,
   MdTimer,
 } from 'react-icons/md';
+import { HiOutlineLink } from 'react-icons/hi';
+
 import { useDispatch, useSelector } from 'react-redux';
 import { add, remove } from '../store/favoritesSlice';
 import { useEffect } from 'react';
@@ -84,8 +86,6 @@ export default function DetailsPage({ type }) {
   const isFavorite = isMovie
     ? favorites?.movies?.some((favorite) => favorite?.id === data.id)
     : favorites?.series?.some((favorite) => favorite?.id === data.id);
-  console.log('favorites:', favorites);
-  console.log('isFavorite:', isFavorite);
 
   const notify = () => {
     isFavorite
@@ -105,28 +105,28 @@ export default function DetailsPage({ type }) {
   }
 
   return (
-    <div className="px-8 py-4 pb-64">
+    <div className="px-8 py-4 sm:pb-8">
       <div className="grid grid-cols-8 gap-8 relative">
         <div className="col-start-1 col-span-full md:col-start-1 md:col-span-2">
           <img
             loading="lazy"
             src={`${baseImageUrl}/w500/${poster_path}`}
             onLoad={(e) => e.currentTarget.classList.add('opacity-100')}
-            className="max-h-96 w-full object-cover transition-opacity duration-500 opacity-0"
+            className="max-h-96 w-full object-center transition-opacity duration-500 opacity-0"
           />
         </div>
-        <div className="col-start-1 col-span-full md:col-start-3 md:col-span-4 flex flex-col gap-8 max-h-96 items-start">
-          <div>
+        <div className="col-start-1 col-span-full md:col-start-3 md:col-span-4 flex flex-col gap-8 max-h-96 items-start mb-16">
+          <div className="w-full">
             <h1 className="text-xl font-bold mb-4">{title || name}</h1>
-            <div className="flex gap-8 font-semibold tracking-wide">
-              <p className="flex items-center gap-1">
+            <div className="w-full flex xs:max-md:justify-between sm:gap-4 font-semibold tracking-wide">
+              <p className="flex items-center gap-1 text-xs sm:text-sm">
                 <span>
                   <MdDateRange />
                 </span>
                 <span>{formattedReleaseDate}</span>
               </p>
 
-              <p className="flex items-center gap-1">
+              <p className="flex items-center gap-1 text-xs sm:text-sm">
                 <span>
                   <MdTimer />
                 </span>
@@ -134,7 +134,7 @@ export default function DetailsPage({ type }) {
                   {runtime || numOfEpisodes} {isMovie ? 'min' : 'episodes'}
                 </span>
               </p>
-              <p className="flex items-center gap-1">
+              <p className="flex items-center gap-1 text-xs sm:text-sm">
                 <span>
                   <MdStar />
                 </span>
@@ -143,14 +143,17 @@ export default function DetailsPage({ type }) {
             </div>
           </div>
           <a
-            href={`https://www.imdb.com/title/${imdb_id || homepage}`}
+            href={homepage ? homepage : `https://www.imdb.com/title/${imdb_id}`}
             target="_blank"
-            className=" bg-gray-800 rounded-md font-semibold uppercase text-yellow-400 px-4 py-2 border-2 border-yellow-400 hover:bg-gray-900 cursor-pointer"
+            className=" flex gap-2 items-center bg-gray-800 rounded-md  uppercase text-yellow-400 px-4 py-2 border-2 border-yellow-400 hover:bg-gray-900 cursor-pointer"
           >
-            {isMovie ? 'imdB page' : 'show page'}
+            <span>
+              <HiOutlineLink />
+            </span>
+            {isMovie ? 'imdB page' : 'Website'}
           </a>
-          <p className="">{overview}</p>
-          <div className="flex gap-4 items-center">
+          <p>{overview}</p>
+          <div className="hidden sm:flex gap-4 items-center">
             <span className="font-semibold">Genre:</span>
             {genres.map((genre) => (
               <span className="border-2 border-yellow-50 px-2 py-1 rounded-full cursor-context-menu hover:border-yellow-200">
@@ -173,7 +176,7 @@ export default function DetailsPage({ type }) {
           )}
         </button>
       </div>
-      <div className="mt-16">
+      <div>
         {!recommendations ? (
           <p>No recommendations found.</p>
         ) : (
@@ -185,8 +188,10 @@ export default function DetailsPage({ type }) {
           </>
         )}
       </div>
+
       <ToastContainer
         position="top-center"
+        className="translate-y-4"
         autoClose={1500}
         hideProgressBar={false}
         newestOnTop={true}
