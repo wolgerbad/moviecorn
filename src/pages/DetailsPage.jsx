@@ -150,7 +150,7 @@ export default function DetailsPage({ type }) {
             <span>
               <HiOutlineLink />
             </span>
-            {isMovie ? 'imdB page' : 'Website'}
+            Website
           </a>
           <p>{overview}</p>
           <div className="hidden sm:flex gap-4 items-center">
