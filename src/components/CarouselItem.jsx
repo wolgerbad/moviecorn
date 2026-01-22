@@ -5,7 +5,7 @@ export default function CarouselItem({ item }) {
   const movieOrSeries = item.first_air_date ? 'series' : 'movies';
 
   return (
-    <div className="embla__slide flex-[0_0_auto] w-24 h-42 sm:w-32 sm:h-50 md:w-40 md:h-60 mr-3 shrink-0 select-none relative">
+    <div className="embla__slide flex-[0_0_auto] w-24 h-42 sm:w-32 sm:h-50 md:w-40 md:h-60 shrink-0 select-none relative">
       <Link to={`/${movieOrSeries}/${item.id}`}>
         <img
           src={`${baseImageUrl}/w500${item.poster_path}`}

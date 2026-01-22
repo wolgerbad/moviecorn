@@ -1,31 +1,35 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery} from '@tanstack/react-query';
 import { Link, useSearchParams } from 'react-router';
 import { getBySearch } from '../lib/helpers';
 import { baseImageUrl } from '../components/Carousel';
 import { useEffect } from 'react';
+import {useInView} from 'react-intersection-observer'
 import Spinner from '../components/Spinner';
 
 export default function Searchpage() {
   const [searchParams] = useSearchParams();
   const searchedValue = searchParams.get('src');
 
-  const queryClient = useQueryClient();
+ const {ref, inView} =  useInView()
 
-  const { isPending, data } = useQuery({
-    queryKey: ['search'],
-    queryFn: async () => await getBySearch(searchedValue),
+  const { data, isPending, error, isFetchingNextPage, hasNextPage, fetchNextPage } = useInfiniteQuery({
+    queryKey: ['search', searchedValue],
+    queryFn: ({pageParam = 1, queryKey}) => {
+      const [_, searchedValue] = queryKey
+      return getBySearch({pageParam, searchedValue})
+    },
+    getNextPageParam: (lastPage) => lastPage.page + 1,
+    initialPageParam: 1
   });
 
-  useEffect(
-    function () {
-      queryClient.invalidateQueries(['search']);
-    },
-    [searchedValue, queryClient]
-  );
+  useEffect(function() {
+    if(inView) fetchNextPage()
+  }, [inView, fetchNextPage])
 
+  if(error) return <p className='text-white text-xl'>Something went wrong.</p>
   if (isPending) return <Spinner />;
 
-  if (!data.length)
+  if (!data.pages[0].results.length)
     return (
       <h1 className="font-semibold font-lg text-yellow-100">
         No movies found for {searchedValue}, try searching something else!
@@ -39,19 +43,20 @@ export default function Searchpage() {
         <span className="italic underline tracking-wider">{searchedValue}</span>
       </h1>
       <div className="grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-8">
-        {data.map((val) => (
-          <Link to={`/${val.first_air_date ? 'series' : 'movies'}/${val.id}`}>
-            <img
-              loading="lazy"
-              onLoad={(e) => e.currentTarget.classList.add('opacity-100')}
-              src={`${baseImageUrl}/w500/${val.poster_path}`}
-              className="rounded-lg border-2 border-transparent hover:brightness-75 hover:border-amber-500 transition-opacity duration-500 opacity-0 "
-            />
-            <h1 className="mt-1 text-sm text-center">
-              {val.title || val.name}
-            </h1>
-          </Link>
+        {data.pages.map((page) => ( 
+          page.results.map(searchedItem => <Link key={searchedItem.id} to={`/${searchedItem.first_air_date ? 'series' : 'movies'}/${searchedItem.id}`}>
+          <img
+            loading="lazy"
+            onLoad={(e) => e.currentTarget.classList.add('opacity-100')}
+            src={`${baseImageUrl}/w500/${searchedItem.poster_path}`}
+            className="rounded-lg border-2 border-transparent hover:brightness-75 hover:border-amber-500 transition-opacity duration-500 opacity-0 "
+          />
+          <h1 className="mt-1 text-sm text-center">
+            {searchedItem.title || searchedItem.name}
+          </h1>
+        </Link> ) 
         ))}
+        <div className='-mt-2' ref={ref}>{hasNextPage && isFetchingNextPage && 'Loading...'}</div>
       </div>
     </div>
   );

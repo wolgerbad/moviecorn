@@ -1,44 +1,43 @@
 import { useQuery } from '@tanstack/react-query';
-import { getMovies, getTvSeries } from '../lib/helpers';
+import { getActionMovies, getActionSeries, getComedyMovies, getComedySeries} from '../lib/helpers';
 import Carousel from '../components/Carousel';
 import Spinner from '../components/Spinner';
 
 export default function Homepage() {
-  const { isPending, data: movies } = useQuery({
-    queryKey: ['movies'],
-    queryFn: getMovies,
-  });
-
-  const { isPending: seriesPending, data: series } = useQuery({
-    queryKey: ['series'],
-    queryFn: getTvSeries,
-  });
-
-  if (isPending || seriesPending) return <Spinner />;
-
-  const actionMovies = movies.filter((movie) => movie.genre_ids.includes(28));
-  const comedyMovies = movies?.filter((movie) => movie.genre_ids.includes(35));
-  const actionSeries = series.filter((show) => show.genre_ids.includes(10759));
-  const comedySeries = series.filter((show) => show.genre_ids.includes(35));
+  const {data: actionMovies, error:actionMoviesError} = useQuery({
+    queryKey: ['actionMovies'],
+    queryFn: getActionMovies,
+  })
+  const {data: comedyMovies, error: comedyMoviesError} = useQuery({
+    queryKey: ['comedyMovies'],
+    queryFn: getComedyMovies,
+  })
+  const {data: actionSeries, error: actionSeriesError} = useQuery({
+    queryKey: ['actionSeries'],
+    queryFn: getActionSeries,
+  })
+  const {data: comedySeries, error:comedySeriesError} = useQuery({
+    queryKey: ['comedySeries'],
+    queryFn: getComedySeries,
+  })
 
   return (
     <div className="p-4 flex flex-col gap-8">
       <div className="text-orange-100">
         <h1 className="text-xl font-bold mb-2">featured movies</h1>
-        <Carousel items={actionMovies} />
+        <Carousel items={actionMovies?.results} error={actionMoviesError} />
       </div>
-
       <div className="text-orange-100">
         <h1 className="text-xl font-bold mb-2">featured series</h1>
-        <Carousel items={actionSeries} />
+        <Carousel items={actionSeries?.results} error={actionSeriesError} />
       </div>
       <div className="text-orange-100">
         <h1 className="text-xl font-bold mb-2">featured comedy movies</h1>
-        <Carousel items={comedyMovies} />
+        <Carousel items={comedyMovies?.results} error={comedyMoviesError} />
       </div>
       <div className="text-orange-100">
         <h1 className="text-xl font-bold mb-2">featured comedy series</h1>
-        <Carousel items={comedySeries} />
+        <Carousel items={comedySeries?.results} error={comedySeriesError} />
       </div>
     </div>
   );

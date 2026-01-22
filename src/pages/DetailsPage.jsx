@@ -11,7 +11,6 @@ import {
   MdDateRange,
   MdFavoriteBorder,
   MdOutlineFavorite,
-  MdOutlineFavoriteBorder,
   MdStar,
   MdTimer,
 } from 'react-icons/md';
@@ -43,9 +42,9 @@ export default function DetailsPage({ type }) {
   });
 
   const {
+    data: recommendations,
     isPending: isRecommendationsLoading,
     isRefetching: isRecommendationsRefetching,
-    data: recommendations,
   } = useQuery({
     queryKey: ['recommendations'],
     queryFn: async () => getRecommendationsById(+id, isMovie ? 'movie' : 'tv'),
@@ -63,13 +62,13 @@ export default function DetailsPage({ type }) {
   if (
     isDetailsLoading ||
     isRecommendationsLoading ||
-    isRefetching ||
-    isRecommendationsRefetching
+    isRefetching || isRecommendationsRefetching
   )
     return <Spinner />;
 
   const {
     poster_path,
+    backdrop_path,
     title,
     name,
     vote_average: rating,
@@ -104,29 +103,49 @@ export default function DetailsPage({ type }) {
     } else dispatch(add({ item: data, isMovie }));
   }
 
+  console.log("data", data)
+
   return (
     <div className="px-8 py-4 sm:pb-8">
-      <div className="grid grid-cols-8 gap-8 relative">
+      <div className="grid grid-cols-8 gap-4 md:gap-8 relative mb-6 md:mb-16">
         <div className="col-start-1 col-span-full md:col-start-1 md:col-span-2">
           <img
             loading="lazy"
             src={`${baseImageUrl}/w500/${poster_path}`}
             onLoad={(e) => e.currentTarget.classList.add('opacity-100')}
-            className="max-h-96 w-full object-center transition-opacity duration-500 opacity-0"
+            className=" w-full object-cover transition-opacity duration-500 opacity-0"
           />
         </div>
-        <div className="col-start-1 col-span-full md:col-start-3 md:col-span-4 flex flex-col gap-8 max-h-96 items-start mb-16">
+        <div className="col-start-1 col-span-full md:col-start-3 md:col-span-4 flex flex-col gap-4 md:gap-6 lg:gap-8 max-h-96 items-start ">
           <div className="w-full">
-            <h1 className="text-xl font-bold mb-4">{title || name}</h1>
+              <div className='w-full flex justify-between items-center mb-4'>
+                  <h1 className="text-xl font-bold">{title || name}</h1>
+                  <button
+                    onClick={() => {
+                      handleFavorite();
+                      notify();
+                    }}
+                    className="md:hidden cursor-pointer text-amber hover:brightness-125 text-white overflow-hidden border-red-500 rounded-md"
+                    >
+                    {isFavorite ? (
+                      <div className='flex gap-2 items-center'>
+                        <MdOutlineFavorite className="text-4xl" /> 
+                      </div>
+                    ) : (
+                      <div className='flex gap-2 items-center'>
+                        <MdFavoriteBorder className="text-4xl" />
+                      </div>
+                    )}
+                  </button>
+              </div>
             <div className="w-full flex xs:max-md:justify-between sm:gap-4 font-semibold tracking-wide">
-              <p className="flex items-center gap-1 text-xs sm:text-sm">
+              <p className="flex items-center gap-1 ">
                 <span>
                   <MdDateRange />
                 </span>
                 <span>{formattedReleaseDate}</span>
               </p>
-
-              <p className="flex items-center gap-1 text-xs sm:text-sm">
+              <p className="flex items-center gap-1 ">
                 <span>
                   <MdTimer />
                 </span>
@@ -134,7 +153,7 @@ export default function DetailsPage({ type }) {
                   {runtime || numOfEpisodes} {isMovie ? 'min' : 'episodes'}
                 </span>
               </p>
-              <p className="flex items-center gap-1 text-xs sm:text-sm">
+              <p className="flex items-center gap-1 ">
                 <span>
                   <MdStar />
                 </span>
@@ -142,21 +161,22 @@ export default function DetailsPage({ type }) {
               </p>
             </div>
           </div>
+
           <a
             href={homepage ? homepage : `https://www.imdb.com/title/${imdb_id}`}
             target="_blank"
             className=" flex gap-2 items-center bg-gray-800 rounded-md  uppercase text-yellow-400 px-4 py-2 border-2 border-yellow-400 hover:bg-gray-900 cursor-pointer"
-          >
+            >
             <span>
               <HiOutlineLink />
             </span>
             Website
-          </a>
+          </a>          
           <p>{overview}</p>
           <div className="hidden sm:flex gap-4 items-center">
             <span className="font-semibold">Genre:</span>
             {genres.map((genre) => (
-              <span className="border-2 border-yellow-50 px-2 py-1 rounded-full cursor-context-menu hover:border-yellow-200">
+              <span key={genre.id} className="border-2 border-yellow-50 px-2 py-1 rounded-full cursor-context-menu hover:border-yellow-200">
                 {genre.name}
               </span>
             ))}
@@ -167,7 +187,7 @@ export default function DetailsPage({ type }) {
             handleFavorite();
             notify();
           }}
-          className="absolute top-0 right-0 cursor-pointer text-amber bg-yellow-700 hover:brightness-125 text-white overflow-hidden z-50 border-red-500 py-2 px-1 rounded-md"
+          className="hidden md:block absolute top-0 right-0 cursor-pointer text-amber bg-yellow-700 hover:brightness-125 text-white overflow-hidden z-50 border-red-500 py-2 px-1 rounded-md"
         >
           {isFavorite ? (
             <MdOutlineFavorite className="text-4xl" />
@@ -176,7 +196,7 @@ export default function DetailsPage({ type }) {
           )}
         </button>
       </div>
-      <div>
+      <div className='mb-4 md:mb-0'>
         {!recommendations ? (
           <p>No recommendations found.</p>
         ) : (

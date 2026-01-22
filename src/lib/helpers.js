@@ -7,60 +7,57 @@ const options = {
   },
 };
 
-export async function getTvSeries() {
-  const pageLength = 10;
-  const pages = Array.from({ length: pageLength }, (_, i) => i + 1);
-
-  const requests = pages.map((page) =>
-    fetch(
-      `https://api.themoviedb.org/3/discover/tv?include_adult=false&include_null_first_air_dates=false&language=en-US&page=${page}&sort_by=vote_count.desc`,
-      options
-    ).then((res) => res.json())
-  );
-
-  const results = await Promise.all(requests);
-
-  const mappedResults = results.flatMap((result) => result.results);
-
-  return mappedResults;
-}
-
-export async function getMovies() {
-  const totalPages = 10;
-  const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
-
-  const requests = pages.map((page) =>
-    fetch(
-      `https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=${page}&sort_by=popularity.desc`,
-      options
-    ).then((res) => res.json())
-  );
-
-  const results = await Promise.all(requests);
-
-  const mappedResults = results.flatMap((res) => res.results);
-
-  return mappedResults;
-}
-
-export async function getMoviesGenres() {
+export async function getTvSeries({pageParam}) {  
   const res = await fetch(
-    'https://api.themoviedb.org/3/genre/movie/list?language=en',
+    `https://api.themoviedb.org/3/discover/tv?include_adult=false&include_null_first_air_dates=false&language=en-US&page=${pageParam}&sort_by=vote_count.desc`,
     options
-  );
-  const data = await res.json();
-
-  return data.genres;
+  )
+  const result = await res.json()
+  return result
 }
 
-export async function getTvSeriesGenres() {
+export async function getMovies({pageParam})  {
   const res = await fetch(
-    'https://api.themoviedb.org/3/genre/tv/list?language=en',
+    `https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=${pageParam}&sort_by=popularity.desc`,
     options
-  );
-  const data = await res.json();
+  )  
+  const result = await res.json()
+  return result
+}
 
-  return data;
+export async function getActionMovies() {
+  const res = await fetch(
+    `https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&sort_by=popularity.desc&with_genres=28`,
+    options
+  )
+  const result = await res.json()
+  
+  return result
+}
+export async function getComedyMovies() {
+  const res = await fetch(
+    `https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&sort_by=popularity.desc&with_genres=35`,
+    options
+  )
+  const result = await res.json()
+  
+  return result
+}
+export async function getActionSeries() {
+  const res = await fetch(
+    `https://api.themoviedb.org/3/discover/tv?include_adult=false&include_null_first_air_dates=false&language=en-US&page=1&sort_by=vote_count.desc&with_genres=10759`,
+    options
+  )
+  const result = await res.json()
+  return result
+}
+export async function getComedySeries() {
+  const res = await fetch(
+    `https://api.themoviedb.org/3/discover/tv?include_adult=false&include_null_first_air_dates=false&language=en-US&page=1&sort_by=vote_count.desc&with_genres=35`,
+    options
+  )
+  const result = await res.json()
+  return result  
 }
 
 export async function getMovieDetailsById(id) {
@@ -93,14 +90,14 @@ export async function getRecommendationsById(id, type) {
   return data.results;
 }
 
-export async function getBySearch(searchVal) {
+export async function getBySearch({pageParam, searchedValue}) {
   const res = await fetch(
-    `https://api.themoviedb.org/3/search/multi?query=${searchVal}&include_adult=false&language=en-US`,
+    `https://api.themoviedb.org/3/search/multi?query=${searchedValue}&include_adult=false&language=en-US&page=${pageParam}`,
     options
   );
   const data = await res.json();
 
-  const fixedData = data.results.filter((val) => val.poster_path);
+  const filteredResults = {page: data.page, results: data.results.filter(result => result.backdrop_path)}
 
-  return fixedData;
+  return filteredResults;
 }

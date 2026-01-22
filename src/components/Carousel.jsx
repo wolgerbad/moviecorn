@@ -7,13 +7,17 @@ import CarouselItem from './CarouselItem';
 
 export const baseImageUrl = 'https://image.tmdb.org/t/p';
 
-export default function Carousel({ items }) {
+export default function Carousel({ items, error }) {
+
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [
     Autoplay({ delay: 4000 }),
   ]);
 
   const scrollPrev = () => emblaApi && emblaApi.scrollPrev();
   const scrollNext = () => emblaApi && emblaApi.scrollNext();
+
+
+  if(error) return <p>Something went wrong while retrieving data. Refresh the page; and if it is still not working, please try again later.</p>
 
   return (
     <div className="relative">
@@ -31,9 +35,9 @@ export default function Carousel({ items }) {
         <BiChevronRight className="text-white w-4 h-4 md:w-6 md:h-6" />
       </button>
       <div className="embla overflow-hidden" ref={emblaRef}>
-        <div className="embla__container flex">
-          {items?.map((item, idx) => (
-            <CarouselItem key={idx} item={item} />
+        <div className="embla__container flex gap-1 md:gap-3">
+          {items?.map((item) => (
+            <CarouselItem key={item.id} item={item} />
           ))}
         </div>
       </div>
